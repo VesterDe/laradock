@@ -899,6 +899,45 @@ RUN if [ ${INSTALL_CACHETOOL} = true ]; then \
 ;fi
 
 ###########################################################################
+# Install NODE:
+###########################################################################
+ARG NODE_VERSION=node
+ENV NODE_VERSION ${NODE_VERSION}
+ARG INSTALL_NODE=true
+ARG INSTALL_NPM_GULP=false
+ARG INSTALL_NPM_BOWER=false
+ARG INSTALL_NPM_VUE_CLI=false
+ARG INSTALL_NPM_ANGULAR_CLI=false
+ARG NPM_REGISTRY
+ENV NPM_REGISTRY ${NPM_REGISTRY}
+ENV NVM_DIR /home/laradock/.nvm
+ARG NVM_NODEJS_ORG_MIRROR
+ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
+
+RUN if [ ${INSTALL_NODE} = true ]; then \ 
+    # Install nvm (A Node Version Manager) 
+    mkdir -p $NVM_DIR && \ 
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \ 
+        && . $NVM_DIR/nvm.sh \ 
+        && nvm install ${NODE_VERSION} \ 
+        && nvm use ${NODE_VERSION} \ 
+        && nvm alias ${NODE_VERSION} \ 
+        && if [ ${NPM_REGISTRY} ]; then \ 
+        npm config set registry ${NPM_REGISTRY} \ 
+        ;fi \ 
+        && if [ ${INSTALL_NPM_GULP} = true ]; then \ 
+        npm install -g gulp \ 
+        ;fi \ 
+        && if [ ${INSTALL_NPM_BOWER} = true ]; then \ 
+        npm install -g bower \ 
+        ;fi \ 
+        && if [ ${INSTALL_NPM_VUE_CLI} = true ]; then \ 
+        npm install -g @vue/cli \ 
+        ;fi \ 
+        && ln -s `npm bin --global` /home/laradock/.node-bin \ 
+;fi
+
+###########################################################################
 # Check PHP version:
 ###########################################################################
 
